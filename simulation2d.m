@@ -8,7 +8,7 @@ runnerPosition(2) = 100; % y
 
 % runner velocity
 runnerSpeed = 1;
-runnerDirection = deg2rad(120); % angle is converted to radians
+runnerDirection = deg2rad(130); % angle is converted to radians
 
 % chaser start position
 chaserPosition(1) = 50; % x
@@ -87,12 +87,12 @@ if ~isnan(closestCollisionPosition)
     % GRAPH
     %
 
-    % plot runner line
-    plot([runnerPosition(1) closestCollisionPosition(1)], [runnerPosition(2) closestCollisionPosition(2)]);
+    % plot runner quiver
+    quiver(runnerPosition(1), runnerPosition(2), runnerVelocity(1) * timeUntilClosestCollision, runnerVelocity(2) * timeUntilClosestCollision, 'AutoScale', 'off');
     hold on
     
-    % plot chaser line
-    plot([chaserPosition(1) closestCollisionPosition(1)], [chaserPosition(2) closestCollisionPosition(2)]);
+    % plot chaser quiver
+    quiver(chaserPosition(1), chaserPosition(2), chaserVelocity(1) * timeUntilClosestCollision, chaserVelocity(2) * timeUntilClosestCollision, 'AutoScale', 'off');
     hold off
     
     legend("runner", "chaser");
