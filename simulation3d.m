@@ -2,6 +2,8 @@
 % USER-EDIT VARIABLES
 %
 
+% bearings run anticlockwise like in a unit circle
+
 % runner start position
 runnerPosition(1) = 100; % x
 runnerPosition(2) = 100; % y
@@ -11,12 +13,12 @@ runnerPosition(3) = 100; % z
 runnerSpeed = 1;
 % angle is converted to radians
 runnerBearing = deg2rad(130); % XY
-runnerElevation = deg2rad(70); % YZ
+runnerElevation = deg2rad(0); % YZ
 
 % chaser start position
-chaserPosition(1) = 20; % x
-chaserPosition(2) = 20; % y
-chaserPosition(3) = 20; % z
+chaserPosition(1) = 50; % x
+chaserPosition(2) = 50; % y
+chaserPosition(3) = 100; % z
 
 % chaser speed
 chaserSpeed = 2;
@@ -94,8 +96,11 @@ if ~isnan(closestCollisionPosition)
     fprintf('Chaser bearing for this collision: %f\n', rad2deg(chaserBearing));
     
     % chaser elevation
-    % TBD - Might need work?
     d = sqrt(chaserVelocity(1)^2 * chaserVelocity(2)^2); % movement in xy plane
+    if d == 0
+        % account for one of them being 0
+        d = max(chaserVelocity(1), chaserVelocity(2));
+    end
     chaserElevation = atan(chaserVelocity(3) / d);
     fprintf('Chaser elevation for this collision: %f\n', rad2deg(chaserElevation));
 

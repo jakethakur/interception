@@ -2,6 +2,8 @@
 % USER-EDIT VARIABLES
 %
 
+% bearings run anticlockwise like in a unit circle
+
 % runner start position
 runnerPosition(1) = 100; % x
 runnerPosition(2) = 100; % y
