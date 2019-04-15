@@ -1,43 +1,43 @@
 %
-% USER-EDIT VARIABLES
+% INPUT VARIABLES
 %
 
 % bearings run anticlockwise like in a unit circle
 
-% runner start position
-runnerPosition(1) = 100; % x
-runnerPosition(2) = 100; % y
-runnerPosition(3) = 100; % z
+% target start position
+targetPosition(1) = 100; % x
+targetPosition(2) = 100; % y
+targetPosition(3) = 0; % z
 
-% runner velocity
-runnerSpeed = 1;
+% target velocity
+targetSpeed = 1;
 % angle is converted to radians
-runnerBearing = deg2rad(130); % XY
-runnerElevation = deg2rad(0); % YZ
+targetBearing = deg2rad(130); % XY
+targetElevation = deg2rad(100); % YZ
 
-% chaser start position
-chaserPosition(1) = 50; % x
-chaserPosition(2) = 50; % y
-chaserPosition(3) = 100; % z
+% interceptor start position
+interceptorPosition(1) = 50; % x
+interceptorPosition(2) = 50; % y
+interceptorPosition(3) = 100; % z
 
-% chaser speed
-chaserSpeed = 2;
+% interceptor speed
+interceptorSpeed = 2;
 
 %
 % CALCULATIONS
 %
 
-distanceVector = [chaserPosition(1) - runnerPosition(1) ...
-    , chaserPosition(2) - runnerPosition(2) ...
-    , chaserPosition(3) - runnerPosition(3)];
+distanceVector = [interceptorPosition(1) - targetPosition(1) ...
+    , interceptorPosition(2) - targetPosition(2) ...
+    , interceptorPosition(3) - targetPosition(3)];
 distance = norm(distanceVector); % magnitude (distance scalar value)
 
-runnerVelocity = [runnerSpeed * cos(runnerBearing) * cos(runnerElevation) ...
-    , runnerSpeed * sin(runnerBearing) * cos(runnerElevation) ...
-    , runnerSpeed * sin(runnerElevation)];
+targetVelocity = [targetSpeed * cos(targetBearing) * cos(targetElevation) ...
+    , targetSpeed * sin(targetBearing) * cos(targetElevation) ...
+    , targetSpeed * sin(targetElevation)];
 
 % find time of collision using cosine rule
-[timeUntilCollision1, timeUntilCollision2] = solveQuadratic(chaserSpeed^2 - runnerSpeed^2, 2*(dot(runnerVelocity, distanceVector)), -(distance^2));
+[timeUntilCollision1, timeUntilCollision2] = solveQuadratic(interceptorSpeed^2 - targetSpeed^2, 2*(dot(targetVelocity, distanceVector)), -(distance^2));
 
 % find points of collision
 
@@ -46,7 +46,7 @@ collision1Position(1) = NaN; % x
 collision1Position(2) = NaN; % y
 collision1Position(3) = NaN; % z
 if ~isnan(timeUntilCollision1) && timeUntilCollision1 > 0 % collision 1 exists
-    collision1Position = runnerPosition + runnerVelocity*timeUntilCollision1;
+    collision1Position = targetPosition + targetVelocity*timeUntilCollision1;
 end
 
 % collision point 2
@@ -54,7 +54,7 @@ collision2Position(1) = NaN; % x
 collision2Position(2) = NaN; % y
 collision2Position(3) = NaN; % z
 if ~isnan(timeUntilCollision2) && timeUntilCollision2 > 0 % collision 2 exists
-    collision2Position = runnerPosition + runnerVelocity*timeUntilCollision2;
+    collision2Position = targetPosition + targetVelocity*timeUntilCollision2;
 end
 
 % find the closest valid collision
@@ -87,45 +87,48 @@ if ~isnan(closestCollisionPosition)
     % https://stackoverflow.com/a/27841544/9713957
     g = sprintf('%f ', closestCollisionPosition); % convert vector to string first
     fprintf('A valid collision has been found: %s\n', g);
-
-    % chaser velocity (base off of the closest valid collision)
-    chaserVelocity = (closestCollisionPosition - chaserPosition) / timeUntilClosestCollision;
-
-    % chaser bearing
-    chaserBearing = atan(chaserVelocity(2)/chaserVelocity(1));
-    fprintf('Chaser bearing for this collision: %f\n', rad2deg(chaserBearing));
     
-    % chaser elevation
-    d = sqrt(chaserVelocity(1)^2 * chaserVelocity(2)^2); % movement in xy plane
+    % print time taken for collisoin
+    fprintf('Time taken for collision: %f\n', timeUntilClosestCollision);
+
+    % interceptor velocity (base off of the closest valid collision)
+    interceptorVelocity = (closestCollisionPosition - interceptorPosition) / timeUntilClosestCollision;
+
+    % interceptor bearing
+    interceptorBearing = atan(interceptorVelocity(2)/interceptorVelocity(1));
+    fprintf('Interceptor bearing for this collision: %f\n', rad2deg(interceptorBearing));
+    
+    % interceptor elevation
+    d = sqrt(interceptorVelocity(1)^2 * interceptorVelocity(2)^2); % movement in xy plane
     if d == 0
         % account for one of them being 0
-        d = max(chaserVelocity(1), chaserVelocity(2));
+        d = max(interceptorVelocity(1), interceptorVelocity(2));
     end
-    chaserElevation = atan(chaserVelocity(3) / d);
-    fprintf('Chaser elevation for this collision: %f\n', rad2deg(chaserElevation));
+    interceptorElevation = atan(interceptorVelocity(3) / d);
+    fprintf('Interceptor elevation for this collision: %f\n', rad2deg(interceptorElevation));
 
     %
     % GRAPH
     %
 
-    % plot runner quiver
-    quiver3(runnerPosition(1), runnerPosition(2), runnerPosition(3) ...
-        , runnerVelocity(1) * timeUntilClosestCollision ...
-        , runnerVelocity(2) * timeUntilClosestCollision ...
-        , runnerVelocity(3) * timeUntilClosestCollision ...
+    % plot target quiver
+    quiver3(targetPosition(1), targetPosition(2), targetPosition(3) ...
+        , targetVelocity(1) * timeUntilClosestCollision ...
+        , targetVelocity(2) * timeUntilClosestCollision ...
+        , targetVelocity(3) * timeUntilClosestCollision ...
         , 'AutoScale', 'off');
     hold on
     
-    % plot chaser quiver
-    quiver3(chaserPosition(1), chaserPosition(2), chaserPosition(3) ...
-        , chaserVelocity(1) * timeUntilClosestCollision ...
-        , chaserVelocity(2) * timeUntilClosestCollision ...
-        , chaserVelocity(3) * timeUntilClosestCollision ...
+    % plot interceptor quiver
+    quiver3(interceptorPosition(1), interceptorPosition(2), interceptorPosition(3) ...
+        , interceptorVelocity(1) * timeUntilClosestCollision ...
+        , interceptorVelocity(2) * timeUntilClosestCollision ...
+        , interceptorVelocity(3) * timeUntilClosestCollision ...
         , 'AutoScale', 'off');
     hold off
     
     % labels
-    legend("runner", "chaser");
+    legend("target", "interceptor");
     xlabel('x')
     ylabel('y')
     zlabel('z')
@@ -136,15 +139,10 @@ else
 end
 
 %
-% ANIMATION
-%
-
-% https://uk.mathworks.com/help/matlab/creating_plots/trace-marker-along-line.html
-% https://uk.mathworks.com/help/matlab/creating_plots/move-group-of-objects-along-line.html
-
-%
 % FUNCTIONS
 %
+
+% https://stackoverflow.com/a/34828707/9713957
 function [root1, root2] = solveQuadratic(a, b, c)
 
   d = b^2 - 4*a*c; % your number under the root sign in quad. formula
