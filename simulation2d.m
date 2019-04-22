@@ -2,7 +2,7 @@
 % INPUT VARIABLES
 %
 
-% bearings run anticlockwise like in a unit circle
+% directions run anticlockwise like in a unit circle
 
 % target start position
 targetPosition(1) = 100; % x
@@ -84,9 +84,9 @@ if ~isnan(closestCollisionPosition)
     % interceptor velocity (base off of the closest valid collision)
     interceptorVelocity = (closestCollisionPosition - interceptorPosition) / timeUntilClosestCollision;
 
-    % interceptor bearing
+    % interceptor direction
     interceptorDirection = atan(interceptorVelocity(2)/interceptorVelocity(1));
-    fprintf('Interceptor bearing for this collision: %f\n', rad2deg(interceptorDirection));
+    fprintf('Interceptor direction for this collision: %f\n', rad2deg(interceptorDirection));
 
     %
     % GRAPH

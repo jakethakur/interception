@@ -2,7 +2,7 @@
 % INPUT VARIABLES
 %
 
-% bearings run anticlockwise like in a unit circle
+% azimuth runs anticlockwise like in a unit circle
 
 % target start position
 targetPosition(1) = 100; % x
@@ -12,8 +12,8 @@ targetPosition(3) = 0; % z
 % target velocity
 targetSpeed = 1;
 % angle is converted to radians
-targetBearing = deg2rad(130); % XY
-targetElevation = deg2rad(100); % YZ
+targetAzimuth = deg2rad(130); % XY
+targetElevation = deg2rad(100); % from XY plane
 
 % interceptor start position
 interceptorPosition(1) = 50; % x
@@ -32,8 +32,8 @@ distanceVector = [interceptorPosition(1) - targetPosition(1) ...
     , interceptorPosition(3) - targetPosition(3)];
 distance = norm(distanceVector); % magnitude (distance scalar value)
 
-targetVelocity = [targetSpeed * cos(targetBearing) * cos(targetElevation) ...
-    , targetSpeed * sin(targetBearing) * cos(targetElevation) ...
+targetVelocity = [targetSpeed * cos(targetAzimuth) * cos(targetElevation) ...
+    , targetSpeed * sin(targetAzimuth) * cos(targetElevation) ...
     , targetSpeed * sin(targetElevation)];
 
 % find time of collision using cosine rule
@@ -94,9 +94,9 @@ if ~isnan(closestCollisionPosition)
     % interceptor velocity (base off of the closest valid collision)
     interceptorVelocity = (closestCollisionPosition - interceptorPosition) / timeUntilClosestCollision;
 
-    % interceptor bearing
-    interceptorBearing = atan(interceptorVelocity(2)/interceptorVelocity(1));
-    fprintf('Interceptor bearing for this collision: %f\n', rad2deg(interceptorBearing));
+    % interceptor azimuth
+    interceptorAzimuth = atan(interceptorVelocity(2)/interceptorVelocity(1));
+    fprintf('Interceptor azimuth for this collision: %f\n', rad2deg(interceptorAzimuth));
     
     % interceptor elevation
     d = sqrt(interceptorVelocity(1)^2 * interceptorVelocity(2)^2); % movement in xy plane
